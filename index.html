@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123a78">
+<title>ระบบติดตามบันทึกแผนปฏิบัติการด้านทรัพยากรน้ำ TWP ประจำปี 2571 จังหวัดจันทบุรี</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<style>
+:root{--nav:#123a78;--nav2:#0d2c5a;--brand:#1769e0;--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e3e8ef;--good:#11875a;--goodbg:#eaf9f1;--bad:#c92f25;--badbg:#fff0ee;--warn:#b35c08;--warnbg:#fff5de;--shadow:0 8px 24px rgba(16,24,40,.06);--radius:18px}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:"Noto Sans Thai",Tahoma,Arial,sans-serif}
+button,input,select{font:inherit}
+button{touch-action:manipulation}
+.app{min-height:100vh}
+.sidebar{width:260px;background:linear-gradient(180deg,var(--nav),var(--nav2));color:#fff;position:fixed;inset:0 auto 0 0;padding:22px 14px;z-index:40}
+.brand{padding:8px 12px 20px;border-bottom:1px solid rgba(255,255,255,.16);margin-bottom:16px}.brand h1{margin:0;font-size:18px;line-height:1.5;font-weight:800}
+.navbtn{width:100%;border:0;background:transparent;color:#eaf1ff;text-align:left;padding:13px 14px;border-radius:12px;margin:3px 0;display:flex;align-items:center;gap:10px;cursor:pointer}.navbtn:hover{background:rgba(255,255,255,.08)}.navbtn.active{background:#fff;color:var(--nav);font-weight:800}.navicon{width:22px;text-align:center}
+.main{margin-left:260px;min-width:0}.topbar{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:30}.top-title{font-size:20px;font-weight:800}.top-sub{font-size:12px;color:var(--muted);margin-top:2px}.toolbar{display:flex;gap:8px;align-items:center}.btn{border:0;border-radius:11px;padding:10px 14px;cursor:pointer;font-weight:700;white-space:nowrap}.btn:disabled{opacity:.55;cursor:wait}.btn-primary{background:var(--brand);color:#fff}.btn-soft{background:#eaf1ff;color:#174ea6}.hidden{display:none!important}
+.content{padding:24px;max-width:1620px;margin:0 auto}.view{display:none}.view.active{display:block}.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:18px}.hero h2{margin:0;font-size:26px}.hero p{margin:6px 0 0;color:var(--muted);font-size:13px}.date-pill{background:#fff;border:1px solid var(--line);padding:8px 12px;border-radius:10px;color:var(--muted);font-size:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}.kpi .accent{position:absolute;right:-18px;top:-18px;width:84px;height:84px;border-radius:50%;background:#eef4ff}.kpi .cap{font-size:12px;color:var(--muted)}.kpi .val{font-size:30px;font-weight:800;margin-top:5px;letter-spacing:-.3px}.kpi .note{font-size:11px;color:var(--muted);margin-top:4px}.kpi-unit{font-size:15px;font-weight:700;margin-left:4px;color:var(--muted);letter-spacing:0}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px;align-items:stretch}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;min-width:0;align-self:stretch}.card h3{margin:0 0 9px;font-size:16px}.hint{color:var(--muted);font-size:12px;margin:0 0 12px}.chartbox{height:300px;position:relative}.mapbox{height:390px;border-radius:14px;overflow:hidden;border:1px solid var(--line);min-height:320px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#fff;max-width:100%}.table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}.table th,.table td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}.table th:first-child,.table td:first-child{padding-left:14px}.table th:last-child,.table td:last-child{padding-right:14px}.table th{background:#f7f9fc;color:#475467;font-size:12px;font-weight:700;text-align:left;position:sticky;top:0;z-index:2;white-space:nowrap}.table td{font-size:12px;line-height:1.6}.table th.num,.table td.num{text-align:right}.table th.center,.table td.center{text-align:center}.table tr:last-child td{border-bottom:0}.table th.center{text-align:center}.table th.num,.table td.num{text-align:right;font-variant-numeric:tabular-nums}.table td.wrap{white-space:normal;word-break:break-word;overflow-wrap:anywhere}.empty{padding:35px!important;text-align:center;color:var(--muted)}
+#districtTable col.c1{width:30%}#districtTable col.c2{width:15%}#districtTable col.c3{width:15%}#districtTable col.c4{width:20%}#districtTable col.c5{width:20%}
+#projectTable{min-width:1080px}#projectTable col.c1{width:17%}#projectTable col.c2{width:28%}#projectTable col.c3{width:14%}#projectTable col.c4{width:10%}#projectTable col.c5{width:12%}#projectTable col.c6{width:15%}#projectTable col.c7{width:4%}
+#missingTable{min-width:1050px}#missingTable col.c1{width:16%}#missingTable col.c2{width:28%}#missingTable col.c3{width:12%}#missingTable col.c4{width:12%}#missingTable col.c5{width:24%}#missingTable col.c6{width:8%}
+#orgTable{min-width:900px}#orgTable col.c1{width:10%}#orgTable col.c2{width:29%}#orgTable col.c3{width:10%}#orgTable col.c4{width:10%}#orgTable col.c5{width:17%}#orgTable col.c6{width:14%}#orgTable col.c7{width:10%}
+#rankTable{min-width:720px}#rankTable col.c1{width:14%}#rankTable col.c2{width:42%}#rankTable col.c3{width:14%}#rankTable col.c4{width:15%}#rankTable col.c5{width:15%}
+#riskTable{min-width:620px}#riskTable col.c1{width:16%}#riskTable col.c2{width:48%}#riskTable col.c3{width:18%}#riskTable col.c4{width:18%}
+.status{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}.status.good{color:#087443;background:var(--goodbg)}.status.bad{color:#b42318;background:var(--badbg)}.status.warn{color:#9a5603;background:var(--warnbg)}
+.docchips{display:flex;flex-wrap:wrap;gap:5px}.docchip{display:inline-flex;align-items:center;padding:4px 7px;border-radius:7px;font-size:10px;line-height:1.35;background:#eef1f5;color:#667085;white-space:nowrap}.docchip.ok{background:var(--goodbg);color:#087443}.docchip.miss{background:var(--badbg);color:#b42318}
+.filters{display:grid;grid-template-columns:minmax(240px,2fr) repeat(4,minmax(145px,1fr));gap:9px;margin-bottom:12px}.input,.select{width:100%;border:1px solid #cfd6e2;background:#fff;border-radius:10px;padding:10px 11px;outline:none}.input:focus,.select:focus{border-color:#7da7ef;box-shadow:0 0 0 3px #eaf1ff}.filter-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.small{font-size:12px;color:var(--muted)}
+.two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}.mini-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}.mini{background:#f8fafc;border:1px solid var(--line);padding:14px;border-radius:13px}.mini .v{font-size:22px;font-weight:800}.mini .l{font-size:11px;color:var(--muted);line-height:1.45}.progress{height:9px;background:#edf1f6;border-radius:999px;overflow:hidden}.progress>div{height:100%;background:linear-gradient(90deg,#1769e0,#6fa1f6)}.progress.good>div{background:linear-gradient(90deg,#15945f,#65d3a2)}
+.rank{display:inline-flex;width:28px;height:28px;border-radius:8px;align-items:center;justify-content:center;background:#f0f4fa;font-weight:800}.rank.top{background:#fff2c8;color:#865600}.tag{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;background:#eef4ff;color:#174ea6}.tag.live{background:var(--goodbg);color:#087443}
+.modal{display:none;position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:100;padding:18px}.modal.open{display:flex;align-items:center;justify-content:center}.modalbox{width:min(980px,100%);max-height:min(92vh,900px);overflow:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.2)}.modalhead{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}.close{border:0;background:#eef1f5;width:38px;height:38px;border-radius:50%;font-size:24px;cursor:pointer}.detailtop{display:grid;grid-template-columns:1.4fr .6fr;gap:12px;margin:14px 0}.infobox{border:1px solid var(--line);border-radius:14px;padding:12px}.infobox .label{font-size:11px;color:var(--muted)}.infobox .value{font-size:14px;font-weight:700;margin-top:3px;word-break:break-word}.doc-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 130px;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}.doc-status{font-size:12px;font-weight:800;text-align:center}.doc-status.ok{color:var(--good)}.doc-status.miss{color:var(--bad)}.bar{height:8px;border-radius:999px;background:#eef1f5;overflow:hidden}.bar div{height:100%;background:#67ce9f}.bar.miss div{background:#f18b7f}.footer-note{text-align:center;color:var(--muted);font-size:11px;padding:24px 0 10px}
+.startup-overlay{display:flex;align-items:center;justify-content:center;position:fixed;inset:0;background:rgba(10,20,40,.62);z-index:120;padding:18px}.startup-overlay.hidden{display:none}.startup-card{width:min(460px,100%);background:#fff;border-radius:22px;padding:26px;box-shadow:0 28px 80px rgba(0,0,0,.22);text-align:center}.startup-icon{width:64px;height:64px;margin:0 auto 12px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:#eaf1ff;color:#1769e0;font-size:30px}.startup-card h2{margin:0;font-size:22px}.startup-card p{margin:7px 0 16px;color:var(--muted);font-size:13px;line-height:1.6}.startup-card .btn{width:100%;padding:12px}.startup-status{min-height:20px;margin-top:10px;color:var(--muted);font-size:12px}.mobile-toggle{display:none;border:0;background:#eef3fb;color:var(--nav);border-radius:10px;width:40px;height:40px;font-size:22px}.overlay-click{display:none}
+
+/* Final alignment and responsive polish */
+.section-stack{display:grid;gap:18px}
+.tablewrap{box-shadow:inset 0 1px 0 rgba(16,24,40,.02)}
+.table tbody tr:hover td{background:#fbfdff}
+#districtTable .c1{width:32%}#districtTable .c2{width:15%}#districtTable .c3{width:13%}#districtTable .c4{width:20%}#districtTable .c5{width:20%}
+#projectTable .c1{width:18%}#projectTable .c2{width:29%}#projectTable .c3{width:14%}#projectTable .c4{width:9%}#projectTable .c5{width:11%}#projectTable .c6{width:16%}#projectTable .c7{width:3%}
+#missingTable .c1{width:18%}#missingTable .c2{width:28%}#missingTable .c3{width:11%}#missingTable .c4{width:11%}#missingTable .c5{width:24%}#missingTable .c6{width:8%}
+#orgTable .c1{width:9%}#orgTable .c2{width:28%}#orgTable .c3{width:10%}#orgTable .c4{width:10%}#orgTable .c5{width:18%}#orgTable .c6{width:15%}#orgTable .c7{width:10%}
+#rankTable .c1{width:12%}#rankTable .c2{width:43%}#rankTable .c3{width:15%}#rankTable .c4{width:15%}#rankTable .c5{width:15%}
+#riskTable .c1{width:13%}#riskTable .c2{width:49%}#riskTable .c3{width:18%}#riskTable .c4{width:20%}
+.docchips{align-items:flex-start}.docchip{max-width:100%;white-space:normal}
+.hero{align-items:center}.hero>div:first-child{min-width:0}
+
+@media(max-width:1120px){.sidebar{width:220px}.main{margin-left:220px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cards{grid-template-columns:1fr}.filters{grid-template-columns:1.7fr 1fr 1fr 1fr}.two-col{grid-template-columns:1fr}.content{padding:20px}}
+@media(max-width:760px){.sidebar{display:none;width:280px}.sidebar.open{display:block;box-shadow:12px 0 28px rgba(0,0,0,.16)}.main{margin-left:0}.topbar{height:auto;min-height:66px;padding:9px 12px;gap:8px}.topbar-left{display:flex;align-items:center;gap:9px;min-width:0}.top-title{font-size:15px;line-height:1.35}.top-sub{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:58vw}.mobile-toggle{display:inline-flex;align-items:center;justify-content:center;flex:0 0 40px}.toolbar{gap:6px}.toolbar .desktop-only{display:none}.btn{padding:9px 10px;font-size:12px}.content{padding:12px}.hero{align-items:flex-start;flex-direction:column;gap:8px}.hero h2{font-size:21px}.hero p{font-size:12px}.date-pill{align-self:stretch}.kpis{grid-template-columns:1fr 1fr;gap:9px}.kpi{padding:13px}.kpi .val{font-size:23px}.kpi .cap{font-size:11px}.cards{gap:12px;margin-top:12px}.card{padding:13px;border-radius:15px}.chartbox{height:250px}.mapbox{height:285px;min-height:240px}.filters{grid-template-columns:1fr;gap:8px}.filter-row{align-items:flex-start;flex-wrap:wrap}.mini-grid{grid-template-columns:1fr 1fr;gap:8px}.mini{padding:11px}.two-col{gap:12px}.modal{padding:10px}.modalbox{padding:15px;border-radius:16px;max-height:94vh}.detailtop{grid-template-columns:1fr}.doc-row{grid-template-columns:1fr;gap:7px}.doc-status{text-align:left}.startup-card{padding:20px}.startup-card h2{font-size:20px}.overlay-click{display:none;position:fixed;inset:0;background:rgba(0,0,0,.18);z-index:35}.overlay-click.open{display:block}.table th,.table td{padding:10px 9px}.footer-note{padding:18px 0 8px}}
+@media(max-width:420px){.kpis{grid-template-columns:1fr}.toolbar{flex:0 0 auto}.toolbar .btn-soft{padding:9px 10px}.top-title{font-size:14px}.top-sub{display:none}.hero h2{font-size:20px}.content{padding:10px}.card{padding:12px}.chartbox{height:230px}.mapbox{height:250px}}
+
+.tablewrap::-webkit-scrollbar{height:8px;width:8px}.tablewrap::-webkit-scrollbar-thumb{background:#cfd7e5;border-radius:999px}.tablewrap::-webkit-scrollbar-track{background:#f6f8fb}
+@media(max-width:760px){.tablewrap{border-radius:12px}.table{min-width:0}.tablewrap .table{min-width:760px}#districtTable{min-width:640px}#orgTable{min-width:760px}#rankTable{min-width:680px}#riskTable{min-width:560px}.table th,.table td{font-size:11px}.status{font-size:10px;padding:4px 8px}.docchip{font-size:9px;padding:4px 6px}}
+/* Final table alignment: header and data share identical column geometry */
+.table{table-layout:fixed;width:100%}
+.table th,.table td{box-sizing:border-box}
+.table .left{text-align:left!important}
+.table .center{text-align:center!important}
+.table .right{text-align:right!important}
+.table .num{font-variant-numeric:tabular-nums}
+.table th.right,.table td.right{padding-right:18px}
+.table th.center,.table td.center{padding-left:10px;padding-right:10px}
+.rate-cell{width:100%;min-width:0}
+.rate-cell .progress{width:100%;margin-top:5px}
+#districtTable col.c1{width:32%}#districtTable col.c2{width:14%}#districtTable col.c3{width:14%}#districtTable col.c4{width:20%}#districtTable col.c5{width:20%}
+#projectTable col.c1{width:17%}#projectTable col.c2{width:28%}#projectTable col.c3{width:14%}#projectTable col.c4{width:10%}#projectTable col.c5{width:12%}#projectTable col.c6{width:15%}#projectTable col.c7{width:4%}
+#missingTable col.c1{width:16%}#missingTable col.c2{width:28%}#missingTable col.c3{width:12%}#missingTable col.c4{width:12%}#missingTable col.c5{width:24%}#missingTable col.c6{width:8%}
+#orgTable col.c1{width:9%}#orgTable col.c2{width:27%}#orgTable col.c3{width:10%}#orgTable col.c4{width:10%}#orgTable col.c5{width:18%}#orgTable col.c6{width:16%}#orgTable col.c7{width:10%}
+#rankTable col.c1{width:12%}#rankTable col.c2{width:43%}#rankTable col.c3{width:15%}#rankTable col.c4{width:15%}#rankTable col.c5{width:15%}
+#riskTable col.c1{width:13%}#riskTable col.c2{width:49%}#riskTable col.c3{width:18%}#riskTable col.c4{width:20%}
+@media(max-width:760px){.table th,.table td{padding:10px 8px;font-size:11px}.tablewrap{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.tablewrap .table{min-width:760px}#districtTable{min-width:620px}#orgTable{min-width:900px}#rankTable{min-width:700px}#riskTable{min-width:600px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><h1>ระบบติดตามบันทึกแผนปฏิบัติการด้านทรัพยากรน้ำ TWP ประจำปี 2571 จังหวัดจันทบุรี</h1></div>
+  <button class="navbtn active" data-view="dashboard"><span class="navicon">⌂</span>ภาพรวม</button>
+  <button class="navbtn" data-view="projects"><span class="navicon">▤</span>โครงการและเอกสาร</button>
+  <button class="navbtn" data-view="orgs"><span class="navicon">◫</span>ราย อปท.</button>
+  <button class="navbtn" data-view="ranking"><span class="navicon">↕</span>จัดอันดับ</button>
+</aside>
+<div class="overlay-click" id="menuOverlay"></div>
+<main class="main">
+<header class="topbar">
+  <div class="topbar-left"><button class="mobile-toggle" id="menuToggle" aria-label="เปิดเมนู">☰</button><div><div class="top-title">ระบบติดตามบันทึกแผนปฏิบัติการด้านทรัพยากรน้ำ TWP ประจำปี 2571 จังหวัดจันทบุรี</div><div class="top-sub">ติดตามสถานะโครงการและตรวจความพร้อมของเอกสารประกอบ</div></div></div>
+  <div class="toolbar"><span class="tag" id="dataSourceBadge">กำลังโหลดข้อมูล</span><button class="btn btn-soft hidden desktop-only" id="refreshBtn">↻ อัปเดตข้อมูล</button><button class="btn btn-primary" id="exportBtn">ส่งออก CSV</button></div>
+</header>
+<div class="content">
+<section id="dashboard" class="view active">
+  <div class="hero"><div><h2>ภาพรวม</h2><p>สรุปสถานะโครงการและความพร้อมของเอกสาร</p></div><div class="date-pill" id="dataStatus">กำลังเตรียมข้อมูล</div></div>
+  <div class="kpis">
+    <div class="kpi"><div class="accent"></div><div class="cap">โครงการทั้งหมด</div><div class="val" id="kpiTotal">0</div><div class="note">รายการ</div></div>
+    <div class="kpi"><div class="accent"></div><div class="cap">พร้อมดำเนินงาน</div><div class="val" id="kpiReady">0</div><div class="note" id="kpiReadyPct">0.0%</div></div>
+    <div class="kpi"><div class="accent"></div><div class="cap">ต้องติดตาม / ไม่พร้อม</div><div class="val" id="kpiNotReady">0</div><div class="note" id="kpiNotReadyPct">0.0%</div></div>
+    <div class="kpi"><div class="accent"></div><div class="cap">งบประมาณรวม (ล้านบาท)</div><div class="val" id="kpiBudget">0<span class="kpi-unit"> ล้านบาท</span></div><div class="note">หน่วย: ล้านบาท</div></div>
+  </div>
+  <div class="cards">
+    <div class="card"><h3>สถานะโครงการ</h3><p class="hint">เปรียบเทียบจำนวนโครงการตามผลการตรวจสอบ</p><div class="chartbox"><canvas id="statusChart"></canvas></div></div>
+    <div class="card"><h3>ความพร้อมเอกสาร</h3><p class="hint">แสดงจำนวนโครงการที่มีเอกสารแต่ละประเภท</p><div class="chartbox"><canvas id="docsChart"></canvas></div></div>
+  </div>
+  <div class="cards">
+    <div class="card"><h3>แผนที่ภาพรวมรายอำเภอ</h3><p class="hint">แตะจุดอำเภอเพื่อดูโครงการของอำเภอนั้น</p><div id="map" class="mapbox"></div></div>
+    <div class="card"><h3>สรุปตามอำเภอ</h3><div class="tablewrap"><table class="table" id="districtTable"></table></div></div>
+  </div>
+</section>
+<section id="projects" class="view">
+  <div class="hero"><div><h2>โครงการและเอกสาร</h2><p>ค้นหา กรอง และตรวจสอบความพร้อมของเอกสารในแต่ละโครงการจากข้อมูลล่าสุด</p></div></div>
+  <div class="card project-control-card">
+    <div class="filter-head"><div><h3>ค้นหาและกรองข้อมูล</h3><div class="small">กรองตาม อปท. อำเภอ สถานะ และความครบถ้วนของเอกสาร</div></div><button class="btn btn-soft" id="clearFilters">ล้างตัวกรอง</button></div>
+    <div class="filters unified-filters">
+      <input id="q" class="input" placeholder="ค้นหา อปท. / ชื่อโครงการ / ตำบล / อำเภอ">
+      <select id="orgFilter" class="select"><option value="">ทุก อปท.</option></select>
+      <select id="district" class="select"><option value="">ทุกอำเภอ</option></select>
+      <select id="status" class="select"><option value="">ทุกสถานะ</option><option value="พร้อมดำเนินงาน">พร้อมดำเนินงาน</option><option value="ไม่พร้อมดำเนินงาน">ไม่พร้อมดำเนินงาน</option></select>
+      <select id="docFilter" class="select"><option value="">เอกสารทั้งหมด</option><option value="missing">มีเอกสารขาด</option><option value="complete">เอกสารครบ</option></select>
+      <select id="missingDocType" class="select"><option value="">เอกสารที่ขาด: ทุกประเภท</option><option value="EP">ข้อเสนอโครงการ / ศึกษาความเหมาะสม</option><option value="EQ">ที่ดิน</option><option value="ER">แบบรูปรายการ</option><option value="ES">ประมาณราคา</option></select>
+    </div>
+    <div class="project-summary-bar">
+      <div class="summary-item"><span>แสดงผล</span><b id="countHint">0 รายการ</b></div>
+      <div class="summary-item"><span>เอกสารครบทุกประเภท</span><b id="completeCount">0</b></div>
+      <div class="summary-item"><span>มีเอกสารขาด</span><b id="missingCount">0</b></div>
+      <div class="summary-item"><span>ควรติดตามเร่งด่วน</span><b id="urgentCount">0</b></div>
+    </div>
+  </div>
+  <div class="card project-list-card">
+    <div class="section-head"><div><h3>รายการโครงการ</h3><div class="small">คลิก “รายละเอียด” เพื่อดูข้อมูลโครงการและผลตรวจเอกสารครบทั้ง 4 ประเภท</div></div></div>
+    <div class="tablewrap"><table class="table" id="projectTable"></table></div>
+  </div>
+</section>
+<section id="orgs" class="view"><div class="hero"><div><h2>สรุปราย อปท.</h2><p>ภาพรวมจำนวนโครงการ งบประมาณ และความพร้อมของแต่ละหน่วยงาน</p></div></div><div class="card"><div class="tablewrap"><table class="table" id="orgTable"></table></div></div></section>
+<section id="ranking" class="view"><div class="hero"><div><h2>จัดอันดับ</h2><p>จัดลำดับ อปท. ตามความพร้อมและความครบถ้วนของเอกสาร</p></div></div><div class="two-col"><div class="card"><h3>อันดับตามความพร้อม</h3><div class="tablewrap"><table class="table" id="rankTable"></table></div></div><div class="card"><h3>อปท. ที่มีเอกสารขาดมากที่สุด</h3><div class="tablewrap"><table class="table" id="riskTable"></table></div></div></div></section>
+<div class="footer-note">ระบบติดตามบันทึกแผนปฏิบัติการด้านทรัพยากรน้ำ TWP ประจำปี 2571 จังหวัดจันทบุรี</div>
+</div></main></div>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true"><div class="modalbox"><div class="modalhead"><div><h2 id="mTitle" style="margin:0;font-size:20px"></h2><div id="mSub" class="small"></div></div><button class="close" id="closeModal" aria-label="ปิด">×</button></div><div id="mBody"></div></div></div>
+<div id="startupModal" class="startup-overlay"><div class="startup-card"><div class="startup-icon">↻</div><h2>อัปเดตข้อมูลล่าสุด</h2><p>กรุณาอัปเดตข้อมูลจาก Google Sheets ก่อนใช้งานระบบ เพื่อให้ตัวเลขและรายการโครงการเป็นข้อมูลปัจจุบัน</p><button class="btn btn-primary" id="startupUpdateBtn">อัปเดตข้อมูล</button><div class="startup-status" id="startupStatus">กำลังเตรียมเชื่อมต่อข้อมูล…</div></div></div>
+
+<script src="data.js"></script>
+<script>
+'use strict';
+
+const SHEETS_API_URL='https://script.google.com/macros/s/AKfycbwTElA-PS745WFKbjkhZpst3mg502VoEPm0nsxz6Hz4VzxB9RQw61YErRLMxypKcKEl/exec';
+const DOCS=[['EP','ข้อเสนอโครงการ / ศึกษาความเหมาะสม'],['EQ','ที่ดิน'],['ER','แบบรูปรายการ'],['ES','ประมาณราคา']];
+let D=Array.isArray(window.LPA_DATA)?window.LPA_DATA.slice():[];
+let statusChart=null,docsChart=null,map=null,refreshTimer=null,liveLoaded=false;
+const $=id=>document.getElementById(id);
+const has=v=>v!==null&&v!==undefined&&String(v).trim()!==''&&Number(v)!==0;
+const missingDocs=x=>DOCS.filter(([k])=>!has(x[k]));
+const allDocs=x=>DOCS.every(([k])=>has(x[k]));
+const pct=(n,d)=>d?((n/d)*100).toFixed(1)+'%':'0.0%';
+const money=n=>Number(n||0).toLocaleString('th-TH',{minimumFractionDigits:0,maximumFractionDigits:3});
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const normStatus=v=>String(v??'').trim();
+
+function badge(v){const s=normStatus(v);const cls=s==='พร้อมดำเนินงาน'?'good':s==='ไม่พร้อมดำเนินงาน'?'bad':'warn';return `<span class="status ${cls}">${esc(s||'ไม่ระบุ')}</span>`}
+function docChips(x){return `<div class="docchips">${DOCS.map(([k,n])=>`<span class="docchip ${has(x[k])?'ok':'miss'}">${has(x[k])?'✓':'✕'} ${esc(n)}</span>`).join('')}</div>`}
+function setSource(live,updated){liveLoaded=live;$('dataSourceBadge').textContent=live?'ข้อมูลล่าสุด':'ข้อมูลสำรอง';$('dataSourceBadge').className='tag '+(live?'live':'');$('dataStatus').textContent=updated?`อัปเดต ${updated}`:(live?'ข้อมูลล่าสุด':'ข้อมูลสำรอง')}
+
+function renderKPIs(){const total=D.length,ready=D.filter(x=>normStatus(x.EO)==='พร้อมดำเนินงาน').length,not=total-ready,budget=D.reduce((s,x)=>s+Number(x.Q||0),0);$('kpiTotal').textContent=total.toLocaleString('th-TH');$('kpiReady').textContent=ready.toLocaleString('th-TH');$('kpiNotReady').textContent=not.toLocaleString('th-TH');$('kpiBudget').innerHTML=money(budget)+'<span class="kpi-unit"> ล้านบาท</span>';$('kpiReadyPct').textContent=pct(ready,total);$('kpiNotReadyPct').textContent=pct(not,total)}
+function fillFilters(){
+  const ds=[...new Set(D.map(x=>String(x.I??'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th'));
+  const os=[...new Set(D.map(x=>String(x.C??'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th'));
+  const currentD=$('district')?.value||'';
+  const currentO=$('orgFilter')?.value||'';
+  $('district').innerHTML='<option value="">ทุกอำเภอ</option>'+ds.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  $('orgFilter').innerHTML='<option value="">ทุก อปท.</option>'+os.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  if(ds.includes(currentD)) $('district').value=currentD;
+  if(os.includes(currentO)) $('orgFilter').value=currentO;
+}
+function renderCharts(){const ready=D.filter(x=>normStatus(x.EO)==='พร้อมดำเนินงาน').length,not=D.length-ready;if(statusChart)statusChart.destroy();statusChart=new Chart($('statusChart'),{type:'doughnut',data:{labels:['พร้อมดำเนินงาน','ไม่พร้อมดำเนินงาน'],datasets:[{data:[ready,not],backgroundColor:['#15945f','#f18b7f'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12,usePointStyle:true}}}}});const vals=DOCS.map(([k])=>D.filter(x=>has(x[k])).length);if(docsChart)docsChart.destroy();docsChart=new Chart($('docsChart'),{type:'bar',data:{labels:DOCS.map(x=>x[1]),datasets:[{label:'จำนวนโครงการที่มีเอกสาร',data:vals,backgroundColor:'#5f93ef',borderRadius:7,maxBarThickness:46}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false},ticks:{font:{size:10},maxRotation:0}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:'#edf1f6'}}},plugins:{legend:{display:false}}}})}
+function renderDistrict(){const m={};D.forEach(x=>{const d=String(x.I??'').trim()||'ไม่ระบุ';m[d]??={n:0,r:0,b:0,miss:0};m[d].n++;m[d].r+=normStatus(x.EO)==='พร้อมดำเนินงาน'?1:0;m[d].b+=Number(x.Q||0);m[d].miss+=missingDocs(x).length});const rows=Object.entries(m).sort((a,b)=>b[1].n-a[1].n||a[0].localeCompare(b[0],'th'));$('districtTable').innerHTML=`<colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"></colgroup><thead><tr><th class="left">อำเภอ</th><th class="center">โครงการ</th><th class="center">พร้อม</th><th class="right">งบประมาณ (ล้านบาท)</th><th class="center">เอกสารที่ขาด</th></tr></thead><tbody>${rows.length?rows.map(([d,v])=>`<tr><td class="left wrap"><b>${esc(d)}</b></td><td class="center">${v.n}</td><td class="center"><span class="tag">${v.r}</span></td><td class="right num">${money(v.b)}</td><td class="center"><span class="status ${v.miss?'bad':'good'}">${v.miss}</span></td></tr>`).join(''):'<tr><td colspan="5" class="empty">ไม่พบข้อมูล</td></tr>'}</tbody>`}
+function renderProjectTable(data=D){
+  if(!data.length){$('projectTable').innerHTML='<tbody><tr><td class="empty" colspan="7">ไม่พบข้อมูลตามเงื่อนไข</td></tr></tbody>';return}
+  const html=data.map(x=>{
+    const miss=missingDocs(x);
+    const missCount=miss.length;
+    return `<tr><td class="left wrap"><b>${esc(x.C||'-')}</b></td><td class="left wrap"><b>${esc(x.E||'-')}</b></td><td class="left wrap">${esc(x.H||'-')}<br><span class="muted">${esc(x.I||'-')}</span></td><td class="right">${money(x.Q)}</td><td class="center">${badge(x.EO)}</td><td><div class="docchips">${DOCS.map(([k,n])=>`<span class="docchip ${has(x[k])?'ok':'miss'}">${has(x[k])?'✓':'✕'} ${esc(n)}</span>`).join('')}</div><div class="small" style="margin-top:5px">${missCount?`ขาด ${missCount} รายการ`:'เอกสารครบ'}</div></td><td class="center"><button class="btn btn-primary" onclick="openModalByRow(${Number(x.row)||0})">รายละเอียด</button></td></tr>`
+  }).join('');
+  $('projectTable').innerHTML=`<colgroup><col style="width:16%"><col style="width:29%"><col style="width:13%"><col style="width:9%"><col style="width:11%"><col style="width:18%"><col style="width:4%"></colgroup><thead><tr><th class="left">อปท.</th><th class="left">โครงการ</th><th class="left">พื้นที่</th><th class="right">งบประมาณ (ล้านบาท)</th><th class="center">สถานะ</th><th class="left">เอกสาร / ผลตรวจ</th><th class="center"></th></tr></thead><tbody>${html}</tbody>`;
+  const complete=data.filter(allDocs).length, missing=data.filter(x=>missingDocs(x).length>0).length, urgent=data.filter(x=>normStatus(x.EO)!=='พร้อมดำเนินงาน'&&missingDocs(x).length>0).length;
+  $('countHint').textContent=`แสดง ${data.length.toLocaleString('th-TH')} จาก ${D.length.toLocaleString('th-TH')} โครงการ`;
+  $('completeCount').textContent=complete.toLocaleString('th-TH');$('missingCount').textContent=missing.toLocaleString('th-TH');$('urgentCount').textContent=urgent.toLocaleString('th-TH');
+}
+function apply(){
+  const qq=String($('q').value||'').toLowerCase().trim();
+  const o=$('orgFilter').value;
+  const d=$('district').value;
+  const s=$('status').value;
+  const f=$('docFilter').value;
+  const mt=$('missingDocType').value;
+  const out=D.filter(x=>{
+    const hit=[x.C,x.E,x.H,x.I,x.J,x.K,x.L].map(v=>String(v??'')).join(' ').toLowerCase().includes(qq);
+    const miss=missingDocs(x);
+    const dc=!f||(f==='missing'&&miss.length>0)||(f==='complete'&&miss.length===0);
+    const typeOk=!mt||miss.some(([k])=>k===mt);
+    return hit&&(!o||String(x.C??'')===o)&&(!d||String(x.I??'')===d)&&(!s||normStatus(x.EO)===s)&&dc&&typeOk;
+  });
+  renderProjectTable(out);
+}
+
+function orgStats(){const m={};D.forEach(x=>{const c=String(x.C??'').trim()||'ไม่ระบุ';m[c]??={n:0,r:0,b:0,miss:0};m[c].n++;m[c].r+=normStatus(x.EO)==='พร้อมดำเนินงาน'?1:0;m[c].b+=Number(x.Q||0);m[c].miss+=missingDocs(x).length});return Object.entries(m).map(([c,v])=>({...v,c,rate:v.n?v.r/v.n:0,docRate:v.n?(v.n*4-v.miss)/(v.n*4):0})).sort((a,b)=>b.rate-a.rate||b.docRate-a.docRate||a.c.localeCompare(b.c,'th'))}
+function renderOrgs(){const rows=orgStats();$('orgTable').innerHTML=`<colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"></colgroup><thead><tr><th class="center">อันดับ</th><th class="left">อปท.</th><th class="center">โครงการ</th><th class="center">พร้อม</th><th class="left">อัตราพร้อม</th><th class="right">งบประมาณ (ล้านบาท)</th><th class="center">เอกสารขาด</th></tr></thead><tbody>${rows.map((o,i)=>`<tr><td class="center"><span class="rank ${i<3?'top':''}">${i+1}</span></td><td class="left wrap"><b>${esc(o.c)}</b></td><td class="center">${o.n}</td><td class="center">${o.r}</td><td class="left"><div class="rate-cell"><div class="small">${(o.rate*100).toFixed(1)}%</div><div class="progress good"><div style="width:${o.rate*100}%"></div></div></div></td><td class="right">${money(o.b)}</td><td class="center"><span class="status ${o.miss?'bad':'good'}">${o.miss}</span></td></tr>`).join('')}</tbody>`}
+function renderRanking(){const rows=orgStats();$('rankTable').innerHTML=`<colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"></colgroup><thead><tr><th class="center">อันดับ</th><th class="left">อปท.</th><th class="center">พร้อม</th><th class="center">อัตราพร้อม</th><th class="center">ความครบเอกสาร</th></tr></thead><tbody>${rows.map((o,i)=>`<tr><td class="center"><span class="rank ${i<3?'top':''}">${i+1}</span></td><td class="left wrap">${esc(o.c)}</td><td class="center">${o.r}/${o.n}</td><td class="center">${(o.rate*100).toFixed(1)}%</td><td class="center">${(o.docRate*100).toFixed(1)}%</td></tr>`).join('')}</tbody>`;const risk=[...rows].sort((a,b)=>b.miss-a.miss||b.n-a.n||a.c.localeCompare(b.c,'th'));$('riskTable').innerHTML=`<colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup><thead><tr><th class="center">อันดับ</th><th class="left">อปท.</th><th class="center">โครงการ</th><th class="center">เอกสารขาด</th></tr></thead><tbody>${risk.map((o,i)=>`<tr><td class="center"><span class="rank">${i+1}</span></td><td class="left wrap">${esc(o.c)}</td><td class="center">${o.n}</td><td class="center"><span class="status ${o.miss?'bad':'good'}">${o.miss}</span></td></tr>`).join('')}</tbody>`}
+function refreshAll(){renderKPIs();fillFilters();renderCharts();renderDistrict();renderProjectTable();renderOrgs();renderRanking();initMap();if($('projects').classList.contains('active'))apply()}
+function initMap(){const el=$('map');if(!el)return;if(map){try{map.remove()}catch(e){}}map=L.map(el).setView([12.72,102.16],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(map);const coords={'เมืองจันทบุรี':[12.609,102.104],'เขาคิชฌกูฏ':[12.82,102.10],'โป่งน้ำร้อน':[12.91,102.22],'สอยดาว':[13.13,102.22],'นายายอาม':[12.78,101.93],'ท่าใหม่':[12.62,102.01]};const agg={};D.forEach(x=>{const d=String(x.I??'').trim();agg[d]??={n:0,r:0};agg[d].n++;agg[d].r+=normStatus(x.EO)==='พร้อมดำเนินงาน'?1:0});Object.entries(coords).forEach(([d,c])=>{if(!agg[d])return;const v=agg[d];const mk=L.circleMarker(c,{radius:10,weight:2,fillOpacity:.78});mk.bindPopup(`<b>${esc(d)}</b><br>โครงการ ${v.n} รายการ<br>พร้อมดำเนินงาน ${v.r} รายการ`);mk.on('click',()=>{showView('projects');$('district').value=d;apply();closeMenu()});mk.addTo(map)});setTimeout(()=>map.invalidateSize(),80)}
+function openModalByRow(row){const x=D.find(v=>Number(v.row)===Number(row))||null;if(!x)return;const miss=missingDocs(x);$('mTitle').textContent=x.E||'รายละเอียดโครงการ';$('mSub').textContent=`${x.C||'-'} • ${x.H||'-'} / ${x.I||'-'}`;$('mBody').innerHTML=`<div class="detailtop"><div class="infobox"><div class="label">อปท.</div><div class="value">${esc(x.C||'-')}</div></div><div class="infobox"><div class="label">สถานะ</div><div class="value">${badge(x.EO)}</div></div><div class="infobox"><div class="label">งบประมาณ (ล้านบาท)</div><div class="value">${money(x.Q)}</div></div><div class="infobox"><div class="label">พื้นที่</div><div class="value">${esc(x.H||'-')} / ${esc(x.I||'-')}</div></div></div><div><h3>ผลตรวจเอกสาร</h3>${DOCS.map(([k,n])=>{const ok=has(x[k]);return `<div class="doc-row"><div><b>${esc(n)}</b><div class="small">${ok?'พบข้อมูลเอกสาร':'ยังไม่พบข้อมูลเอกสาร'}</div></div><div class="doc-status ${ok?'ok':'miss'}">${ok?'✓ มีเอกสาร':'✕ ขาดเอกสาร'}</div><div class="bar ${ok?'':'miss'}"><div style="width:${ok?'100':'8'}%"></div></div></div>`}).join('')}</div><div class="infobox" style="margin-top:14px;background:${miss.length?'#fff9f8':'#f4fbf7'}"><b>${miss.length?`ควรติดตาม ${miss.length} รายการ`:'เอกสารครบทั้ง 4 ประเภท'}</b>${miss.length?`<div class="small" style="margin-top:5px">${miss.map(([,n])=>esc(n)).join(' • ')}</div>`:''}</div>`;$('modal').classList.add('open');document.body.style.overflow='hidden'}
+function closeModal(){ $('modal').classList.remove('open');document.body.style.overflow=''}
+function exportCSV(){const headers=['อปท.','โครงการ','ตำบล','อำเภอ','จังหวัด','ลุ่มน้ำหลัก','ลุ่มน้ำย่อย','งบประมาณ','สถานะ','ข้อเสนอโครงการ/ศึกษาความเหมาะสม','ที่ดิน','แบบรูปรายการ','ประมาณราคา','เอกสารที่ขาด'];const rows=D.map(x=>[x.C,x.E,x.H,x.I,x.J,x.K,x.L,x.Q,x.EO,x.EP,x.EQ,x.ER,x.ES,missingDocs(x).map(([,n])=>n).join(' | ')]);const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='TWP-71-จันทบุรี-2569.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(id==='dashboard'&&map)setTimeout(()=>map.invalidateSize(),80);closeMenu()}
+function closeMenu(){$('sidebar').classList.remove('open');$('menuOverlay').classList.remove('open')}
+function openMenu(){$('sidebar').classList.add('open');$('menuOverlay').classList.add('open')}
+
+function refreshData(manual=false,fromStartup=false){
+  if(!SHEETS_API_URL)return Promise.resolve(false);
+  const btn=$('refreshBtn'),startup=$('startupModal'),startupBtn=$('startupUpdateBtn'),startupStatus=$('startupStatus');
+  btn.disabled=true;btn.textContent='กำลังอัปเดต…';
+  if(fromStartup){startupBtn.disabled=true;startupBtn.textContent='กำลังอัปเดต…';startupStatus.textContent='กำลังเชื่อมต่อข้อมูล…'}
+  return new Promise(resolve=>{
+    const cb='twp71_'+Date.now()+'_'+Math.random().toString(36).slice(2);let script=null,done=false;
+    const finish=ok=>{if(done)return;done=true;btn.disabled=false;btn.textContent='↻ อัปเดตข้อมูล';if(fromStartup){startupBtn.disabled=false;startupBtn.textContent='อัปเดตข้อมูล'}if(script)script.remove();delete window[cb];resolve(ok)};
+    const timeout=setTimeout(()=>{if(fromStartup)startupStatus.textContent='เชื่อมต่อไม่สำเร็จ กรุณากดปุ่มอีกครั้ง';else if(manual)alert('เชื่อมต่อข้อมูลไม่สำเร็จ กรุณาตรวจสอบการ Deploy ของ Apps Script');finish(false)},20000);
+    window[cb]=payload=>{clearTimeout(timeout);if(payload&&payload.ok&&Array.isArray(payload.data)&&payload.data.length>0){D=payload.data.map((x,i)=>({...x,_i:i}));setSource(true,payload.updatedAt||'');refreshAll();$('refreshBtn').classList.remove('hidden');$('startupModal').classList.add('hidden');if(fromStartup)startupStatus.textContent='อัปเดตสำเร็จ';finish(true)}else{const msg=(payload&&payload.error)||'ไม่พบข้อมูลจาก Google Sheets';if(fromStartup)startupStatus.textContent=msg;else if(manual)alert(msg);finish(false)}};
+    script=document.createElement('script');script.async=true;script.src=SHEETS_API_URL+(SHEETS_API_URL.includes('?')?'&':'?')+'callback='+encodeURIComponent(cb)+'&t='+Date.now();script.onerror=()=>{clearTimeout(timeout);if(fromStartup)startupStatus.textContent='ไม่สามารถเชื่อมต่อข้อมูลได้ กรุณาลองอีกครั้ง';else if(manual)alert('ไม่สามารถเชื่อมต่อ Google Sheets ได้');finish(false)};document.body.appendChild(script);
+  })
+}
+
+// Initial state: show fallback immediately, then automatically request live data.
+setSource(false,'');refreshAll();
+$('refreshBtn').classList.remove('hidden');
+$('refreshBtn').addEventListener('click',()=>refreshData(true,false));
+$('startupUpdateBtn').addEventListener('click',()=>refreshData(true,true));
+$('exportBtn').addEventListener('click',exportCSV);
+$('clearFilters').addEventListener('click',()=>{$('q').value='';$('orgFilter').value='';$('district').value='';$('status').value='';$('docFilter').value='';$('missingDocType').value='';apply()});
+[$('q'),$('orgFilter'),$('district'),$('status'),$('docFilter'),$('missingDocType')].forEach(el=>el.addEventListener(el.tagName==='INPUT'?'input':'change',apply));
+$('missingDocType').addEventListener('change',apply);
+$('closeModal').addEventListener('click',closeModal);$('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeMenu()}});
+document.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+$('menuToggle').addEventListener('click',openMenu);$('menuOverlay').addEventListener('click',closeMenu);
+
+// Attempt to load live data right away. The popup remains only if the live request fails.
+refreshData(false,true).finally(()=>{if(!liveLoaded)$('startupModal').classList.remove('hidden')});
+refreshTimer=setInterval(()=>refreshData(false,false),5*60*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshData(false,false)});
+</script>
+</body>
+</html>
